@@ -12,7 +12,7 @@
 #define s3 8
 //#define mode 
 
-int pressed=0,end=0,mode=0;
+int pressed=0,end=0,mode=0,len=0;
 String path="";
 
 void setup() {
@@ -163,7 +163,8 @@ String solve(String p)
 {
   char temp[100];
   p.toCharArray(temp,100);
-  int i,j,k,len=p.length(),len2;
+  int i,j,k,len2;
+  len=p.length();
   for(j=0;j<len;j++)
   {
     Serial.println(temp[j]+'\n');
@@ -188,10 +189,10 @@ String solve(String p)
       else if(temp[i]=='L'&&temp[k]=='S')
         temp[i]='R';
       i++;
-      j=i;
+      j=i-1;
       k++;
       for(i;k<len;i++,k++)
-        temp[i]=temp[k];i
+        temp[i]=temp[k];
       len-=2;
     }
   }
@@ -200,11 +201,12 @@ String solve(String p)
 }
 
 void loop() {
+  int i,sw,s;
   if(mode==0)
   { 
    delay(10);
     if(end==1){
-      int s = check();
+      s = check();
       Serial.print(s);
       switch(s)
       {
@@ -267,13 +269,34 @@ void loop() {
     Serial.println(path);
     }
   }
-  
+  else if(mode)
+  {
+    boolean flag=false;
+    Serial.println(path+"/t hello");
+    sw = digitalRead(s1)*10 + digitalRead(s5);
+    if(sw==10||sw==1||sw==11)
+      flag=true;
+    if(flag&&i<len)
+    {
+      char t=path.charAt(i);
+      switch(t)
+      {
+        case 'L': {left(); Serial.print("L .  ");}
+        case 'R': {right(); Serial.print("R .   ");}
+        case 'S': {fw(); Serial.print("F .  ");}
+        case 'e': {i++; Serial.print("e .   ");}
+        case ' ': {stp(); Serial.print("S   ");}
+      }
+      i++;
+    }
+  }
   pressed=digitalRead(button);
   if(pressed)
   {
+    i=0;
     reset();
     mode=!mode;
   }
-   pressed=0;
+  pressed=0;  
   //Serial.println(mode);
 }
